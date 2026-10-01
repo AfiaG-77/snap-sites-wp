@@ -1,0 +1,84 @@
+# Snap Sites WP
+
+Snap Sites WP is a WordPress Multisite plugin that lets network super admins spin up polished, editable starter websites for customers. It includes a template picker UI, site creation flow, shared starter-page structure, and placeholder licensing hooks for future plan enforcement.
+
+## Features
+
+- Multisite-ready site creation via WordPress APIs
+- Template cards for Local Business and seven Pro templates
+- Per-template setup functions
+- Shared starter styling and reusable component classes
+- AJAX-based site creation and JSON responses
+- Site list for monitoring created sites
+- Plan-limit logic structure for future licensing
+- Fully editable starter content via normal WordPress pages and menus
+
+## Included templates
+
+- Local Business (Free)
+- Corporate (Pro)
+- Hotel (Pro)
+- Fashion (Pro)
+- Real Estate (Pro)
+- Beauty (Pro)
+- Restaurant (Pro)
+- Clinic (Pro)
+
+## Installation
+
+1. Upload the plugin folder or copy the plugin files into `wp-content/plugins/snap-sites-wp/`.
+2. Activate the plugin in the WordPress admin.
+3. Ensure the site is running in a WordPress Multisite network.
+4. Open the network admin menu item `Snap Sites`.
+
+## Usage
+
+1. Open `Snap Sites` from the network admin.
+2. Choose a template card.
+3. Enter optional site details if needed.
+4. Click `Create Site`.
+5. The AJAX flow creates the site, creates pages, menu, and starter content, and returns the site URL, admin URL, username, and password.
+
+## Template architecture
+
+The plugin keeps separate setup functions for each template, for example:
+
+- `ssw_setup_local_business_template()`
+- `ssw_setup_corporate_template()`
+- `ssw_setup_hotel_template()`
+- `ssw_setup_fashion_template()`
+- `ssw_setup_real_estate_template()`
+- `ssw_setup_beauty_template()`
+- `ssw_setup_restaurant_template()`
+- `ssw_setup_clinic_template()`
+
+These functions create the pages and starter content for each site while preserving a shared component system.
+
+## Security
+
+- Network admin-only capability checks
+- Multisite validation
+- AJAX nonce checks
+- Sanitized and escaped output
+- `switch_to_blog()` / `restore_current_blog()` usage when creating site content
+- Graceful JSON errors
+
+## Future licensing hooks
+
+The plugin includes a function stub:
+
+```php
+ssw_user_can_access_template( string $template_id, string $plan = '' ): bool
+```
+
+This currently allows the network super admin to access all templates for testing and can be extended to enforce plan/license-based template access later.
+
+## Notes
+
+- This is intentionally a starter implementation designed for easy extension.
+- Image placeholders are handled with layout blocks and neutral placeholders rather than random hotlinked images.
+- The design is intentionally polished but broad enough to be edited by a customer without custom design work.
+
+## License
+
+This plugin is distributed under the GPL-3.0 license.
