@@ -16,7 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Define plugin constants.
 if ( ! defined( 'SSW_PLUGIN_FILE' ) ) {
 	define( 'SSW_PLUGIN_FILE', __FILE__ );
 }
@@ -30,29 +29,14 @@ if ( ! defined( 'SSW_PLUGIN_VERSION' ) ) {
 	define( 'SSW_PLUGIN_VERSION', '1.0.0' );
 }
 
-/**
- * Check if multisite is active.
- *
- * @return bool
- */
 function ssw_is_multisite() {
 	return is_multisite();
 }
 
-/**
- * Check if current user is a network super admin.
- *
- * @return bool
- */
 function ssw_is_super_admin() {
 	return is_super_admin();
 }
 
-/**
- * Get all template definitions.
- *
- * @return array
- */
 function ssw_get_template_definitions() {
 	return array(
 		'local-business' => array(
@@ -62,6 +46,7 @@ function ssw_get_template_definitions() {
 			'description' => 'Simple business website for services, trades and local companies.',
 			'body_class'  => 'ssw-local-business',
 			'color'       => '#1d4ed8',
+			'premium'     => false,
 		),
 		'corporate' => array(
 			'name'        => 'Corporate',
@@ -70,6 +55,7 @@ function ssw_get_template_definitions() {
 			'description' => 'Professional company website for consulting, agencies and B2B firms.',
 			'body_class'  => 'ssw-corporate',
 			'color'       => '#2563eb',
+			'premium'     => true,
 		),
 		'hotel' => array(
 			'name'        => 'Hotel',
@@ -78,6 +64,7 @@ function ssw_get_template_definitions() {
 			'description' => 'Hospitality site for hotels and guest houses with premium visuals.',
 			'body_class'  => 'ssw-hotel',
 			'color'       => '#b89555',
+			'premium'     => true,
 		),
 		'fashion' => array(
 			'name'        => 'Fashion',
@@ -86,6 +73,7 @@ function ssw_get_template_definitions() {
 			'description' => 'Editorial boutique and fashion website for brands and stores.',
 			'body_class'  => 'ssw-fashion',
 			'color'       => '#a45d5d',
+			'premium'     => true,
 		),
 		'real-estate' => array(
 			'name'        => 'Real Estate',
@@ -94,6 +82,7 @@ function ssw_get_template_definitions() {
 			'description' => 'Property-focused website for estate agents and developers.',
 			'body_class'  => 'ssw-real-estate',
 			'color'       => '#16324f',
+			'premium'     => true,
 		),
 		'beauty' => array(
 			'name'        => 'Beauty',
@@ -102,6 +91,7 @@ function ssw_get_template_definitions() {
 			'description' => 'Salon and beauty-services website with a warm, elegant feel.',
 			'body_class'  => 'ssw-beauty',
 			'color'       => '#c98f8f',
+			'premium'     => true,
 		),
 		'restaurant' => array(
 			'name'        => 'Restaurant',
@@ -110,6 +100,7 @@ function ssw_get_template_definitions() {
 			'description' => 'Food and hospitality website for cafés, restaurants and bakeries.',
 			'body_class'  => 'ssw-restaurant',
 			'color'       => '#c66a3d',
+			'premium'     => true,
 		),
 		'clinic' => array(
 			'name'        => 'Clinic',
@@ -118,15 +109,11 @@ function ssw_get_template_definitions() {
 			'description' => 'Professional healthcare website for clinics and wellness businesses.',
 			'body_class'  => 'ssw-clinic',
 			'color'       => '#2b7a78',
+			'premium'     => true,
 		),
 	);
 }
 
-/**
- * Get plan limits.
- *
- * @return array
- */
 function ssw_get_plan_limits() {
 	return array(
 		'Free'    => 1,
@@ -136,21 +123,10 @@ function ssw_get_plan_limits() {
 	);
 }
 
-/**
- * Get current plan. This is hard-coded for now but can be replaced with licensing logic.
- *
- * @return string
- */
 function ssw_get_current_plan() {
-	// Hard-coded for testing. Replace with licensing logic later.
 	return apply_filters( 'ssw_current_plan', 'Pro' );
 }
 
-/**
- * Count active Snap Sites created via the plugin.
- *
- * @return int
- */
 function ssw_get_active_site_count() {
 	if ( ! is_multisite() ) {
 		return 0;
@@ -174,22 +150,12 @@ function ssw_get_active_site_count() {
 	return $count;
 }
 
-/**
- * Get plan limit for current plan.
- *
- * @return int
- */
 function ssw_get_plan_limit_for_current_plan() {
-	$plan  = ssw_get_current_plan();
+	$plan   = ssw_get_current_plan();
 	$limits = ssw_get_plan_limits();
 	return isset( $limits[ $plan ] ) ? $limits[ $plan ] : 1;
 }
 
-/**
- * Get all created Snap Sites.
- *
- * @return array
- */
 function ssw_get_created_sites() {
 	if ( ! is_multisite() ) {
 		return array();
@@ -224,13 +190,6 @@ function ssw_get_created_sites() {
 	return $items;
 }
 
-/**
- * Check if the current user can access a specific template.
- *
- * @param string $template_id Template ID.
- * @param string $plan Plan name (optional).
- * @return bool
- */
 function ssw_user_can_access_template( $template_id, $plan = '' ) {
 	if ( ! is_multisite() ) {
 		return false;
@@ -240,16 +199,9 @@ function ssw_user_can_access_template( $template_id, $plan = '' ) {
 		return false;
 	}
 
-	// For now, allow super admin to access all templates.
-	// This function can be extended later to enforce plan/license-based access.
 	return apply_filters( 'ssw_user_can_access_template', true, $template_id, $plan );
 }
 
-/**
- * Enqueue admin scripts and styles.
- *
- * @param string $hook Current admin page hook.
- */
 function ssw_enqueue_admin_assets( $hook ) {
 	if ( 'toplevel_page_snap-sites' !== $hook ) {
 		return;
@@ -281,9 +233,6 @@ function ssw_enqueue_admin_assets( $hook ) {
 }
 add_action( 'admin_enqueue_scripts', 'ssw_enqueue_admin_assets' );
 
-/**
- * Register network admin menu.
- */
 function ssw_register_network_admin_menu() {
 	if ( ! is_multisite() ) {
 		return;
@@ -301,23 +250,19 @@ function ssw_register_network_admin_menu() {
 }
 add_action( 'network_admin_menu', 'ssw_register_network_admin_menu' );
 
-/**
- * Render the Snap Sites dashboard page.
- */
 function ssw_render_dashboard_page() {
 	if ( ! is_multisite() || ! is_super_admin() ) {
 		wp_die( 'Access denied.' );
 	}
 
-	$templates     = ssw_get_template_definitions();
-	$current_plan  = ssw_get_current_plan();
-	$limit         = ssw_get_plan_limit_for_current_plan();
-	$used          = ssw_get_active_site_count();
-	$sites         = ssw_get_created_sites();
+	$templates    = ssw_get_template_definitions();
+	$current_plan = ssw_get_current_plan();
+	$limit        = ssw_get_plan_limit_for_current_plan();
+	$used         = ssw_get_active_site_count();
+	$sites        = ssw_get_created_sites();
 	?>
 	<div class="wrap ssw-admin-wrap">
 		<h1>Snap Sites</h1>
-
 		<div class="ssw-plan-box">
 			<div>
 				<strong>Current Plan:</strong> <?php echo esc_html( $current_plan ); ?><br>
@@ -326,7 +271,6 @@ function ssw_render_dashboard_page() {
 		</div>
 
 		<h2>Create a New Site</h2>
-
 		<div class="ssw-template-grid">
 			<?php foreach ( $templates as $template_id => $template ) : ?>
 				<div class="ssw-template-card">
@@ -337,14 +281,7 @@ function ssw_render_dashboard_page() {
 						<h3><?php echo esc_html( $template['name'] ); ?></h3>
 						<p><?php echo esc_html( $template['description'] ); ?></p>
 						<div class="ssw-template-meta"><?php echo esc_html( $template['category'] ); ?></div>
-						<button
-							type="button"
-							class="button button-primary ssw-create-site-button"
-							data-template-id="<?php echo esc_attr( $template_id ); ?>"
-							<?php echo ( $used >= $limit ) ? 'disabled' : ''; ?>
-						>
-							Create Site
-						</button>
+						<button type="button" class="button button-primary ssw-create-site-button" data-template-id="<?php echo esc_attr( $template_id ); ?>" <?php echo ( $used >= $limit ) ? 'disabled' : ''; ?>>Create Site</button>
 					</div>
 				</div>
 			<?php endforeach; ?>
@@ -352,31 +289,14 @@ function ssw_render_dashboard_page() {
 
 		<div class="ssw-form-box">
 			<h2>Site Details</h2>
-			<p>These details are optional and used to personalize the new site.</p>
 			<table class="form-table">
 				<tr>
 					<th><label for="ssw_customer_email">Customer email</label></th>
-					<td>
-						<input
-							type="email"
-							id="ssw_customer_email"
-							name="customer_email"
-							class="regular-text"
-							placeholder="hello@example.com"
-						/>
-					</td>
+					<td><input type="email" id="ssw_customer_email" name="customer_email" class="regular-text" placeholder="hello@example.com" /></td>
 				</tr>
 				<tr>
 					<th><label for="ssw_business_name">Business / site name</label></th>
-					<td>
-						<input
-							type="text"
-							id="ssw_business_name"
-							name="business_name"
-							class="regular-text"
-							placeholder="My Business"
-						/>
-					</td>
+					<td><input type="text" id="ssw_business_name" name="business_name" class="regular-text" placeholder="My Business" /></td>
 				</tr>
 			</table>
 		</div>
@@ -403,38 +323,11 @@ function ssw_render_dashboard_page() {
 						<?php foreach ( $sites as $site ) : ?>
 							<tr>
 								<td><?php echo esc_html( $site['site_name'] ); ?></td>
-								<td>
-									<?php
-									$template_name = isset( $templates[ $site['template'] ] )
-										? $templates[ $site['template'] ]['name']
-										: ucfirst( str_replace( '-', ' ', $site['template'] ) );
-									echo esc_html( $template_name );
-									?>
-								</td>
-								<td>
-									<a href="<?php echo esc_url( $site['url'] ); ?>" target="_blank" rel="noopener noreferrer">
-										<?php echo esc_html( wp_parse_url( $site['url'], PHP_URL_HOST ) ); ?>
-									</a>
-								</td>
-								<td>
-									<a href="<?php echo esc_url( $site['admin_url'] ); ?>" target="_blank" rel="noopener noreferrer">
-										Dashboard
-									</a>
-								</td>
-								<td>
-									<?php
-									$created = $site['created'];
-									if ( ! empty( $created ) ) {
-										echo esc_html( gmdate( 'M d, Y', strtotime( $created ) ) );
-									} else {
-										echo '&mdash;';
-									}
-									?>
-								</td>
-								<td>
-									<a href="<?php echo esc_url( $site['url'] ); ?>" class="button button-small" target="_blank" rel="noopener noreferrer">Visit</a>
-									<a href="<?php echo esc_url( $site['admin_url'] ); ?>" class="button button-small" target="_blank" rel="noopener noreferrer">Edit</a>
-								</td>
+								<td><?php echo esc_html( $templates[ $site['template'] ]['name'] ?? ucfirst( str_replace( '-', ' ', $site['template'] ) ) ); ?></td>
+								<td><a href="<?php echo esc_url( $site['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( wp_parse_url( $site['url'], PHP_URL_HOST ) ); ?></a></td>
+								<td><a href="<?php echo esc_url( $site['admin_url'] ); ?>" target="_blank" rel="noopener noreferrer">Dashboard</a></td>
+								<td><?php echo ! empty( $site['created'] ) ? esc_html( gmdate( 'M d, Y', strtotime( $site['created'] ) ) ) : '&mdash;'; ?></td>
+								<td><a href="<?php echo esc_url( $site['url'] ); ?>" class="button button-small" target="_blank" rel="noopener noreferrer">Visit</a> <a href="<?php echo esc_url( $site['admin_url'] ); ?>" class="button button-small" target="_blank" rel="noopener noreferrer">Edit</a></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -448,59 +341,33 @@ function ssw_render_dashboard_page() {
 			<p><strong>Sites allowed:</strong> <?php echo esc_html( $limit ); ?></p>
 			<p><strong>Sites used:</strong> <?php echo esc_html( $used ); ?></p>
 			<p><strong>License status:</strong> Active</p>
-			<p><em>License key integration coming soon.</em></p>
 		</div>
 	</div>
 	<?php
 }
 
-/**
- * Get template setup function name.
- *
- * @param string $template_id Template ID.
- * @return string
- */
-function ssw_get_template_setup_function( $template_id ) {
-	$snake_case = str_replace( '-', '_', sanitize_key( $template_id ) );
-	return 'ssw_setup_' . $snake_case . '_template';
-}
-
-/**
- * Detect a safe template slug from the template ID.
- *
- * @param string $template_id Template ID.
- * @return string
- */
 function ssw_detect_template_slug( $template_id ) {
 	$template_id = sanitize_key( $template_id );
 	return preg_replace( '/[^a-z0-9-]+/', '-', strtolower( $template_id ) );
 }
 
-/**
- * Create a WordPress page if it doesn't exist.
- *
- * @param string $title Page title.
- * @param string $content Page content.
- * @param string $slug Page slug.
- * @return int|WP_Error Page ID or error.
- */
 function ssw_create_page( $title, $content, $slug ) {
-	// Check if page already exists.
 	$existing = get_page_by_path( $slug );
 	if ( $existing ) {
 		return $existing->ID;
 	}
 
-	$page_data = array(
-		'post_title'   => sanitize_text_field( $title ),
-		'post_content' => wp_kses_post( $content ),
-		'post_status'  => 'publish',
-		'post_author'  => get_current_user_id() ? get_current_user_id() : 1,
-		'post_type'    => 'page',
-		'post_name'    => sanitize_title( $slug ),
+	$page_id = wp_insert_post(
+		array(
+			'post_title'   => sanitize_text_field( $title ),
+			'post_content' => wp_kses_post( $content ),
+			'post_status'  => 'publish',
+			'post_author'  => get_current_user_id() ? get_current_user_id() : 1,
+			'post_type'    => 'page',
+			'post_name'    => sanitize_title( $slug ),
+		),
+		true
 	);
-
-	$page_id = wp_insert_post( $page_data, true );
 
 	if ( is_wp_error( $page_id ) ) {
 		return $page_id;
@@ -509,45 +376,25 @@ function ssw_create_page( $title, $content, $slug ) {
 	return $page_id;
 }
 
-/**
- * Generate a unique site slug.
- *
- * @param string $template_id Template ID.
- * @return string
- */
 function ssw_generate_site_slug( $template_id ) {
 	$base = ssw_detect_template_slug( $template_id );
 	$random = substr( md5( $base . microtime() . wp_rand( 10000, 99999 ) ), 0, 6 );
 	return $base . '-' . $random;
 }
 
-/**
- * Create and assign a navigation menu.
- *
- * @param string $template_id Template ID.
- * @param array  $pages Array of page data with 'id' and 'title'.
- * @return int|false Menu ID or false on failure.
- */
 function ssw_create_navigation_menu( $template_id, $pages ) {
 	$menu_name = ucfirst( str_replace( '-', ' ', $template_id ) ) . ' Menu';
 
-	// Check if menu already exists.
 	$menu_exists = wp_get_nav_menu_object( $menu_name );
-	if ( $menu_exists ) {
-		$menu_id = $menu_exists->term_id;
-	} else {
-		$menu_id = wp_create_nav_menu( $menu_name );
-		if ( is_wp_error( $menu_id ) ) {
-			return false;
-		}
+	$menu_id = $menu_exists ? $menu_exists->term_id : wp_create_nav_menu( $menu_name );
+	if ( is_wp_error( $menu_id ) ) {
+		return false;
 	}
 
-	// Add pages to menu.
 	foreach ( $pages as $page ) {
 		if ( empty( $page['id'] ) ) {
 			continue;
 		}
-
 		wp_update_nav_menu_item(
 			$menu_id,
 			0,
@@ -561,7 +408,6 @@ function ssw_create_navigation_menu( $template_id, $pages ) {
 		);
 	}
 
-	// Assign menu to primary location.
 	$locations = get_theme_mod( 'nav_menu_locations' ) ? get_theme_mod( 'nav_menu_locations' ) : array();
 	$locations['primary'] = $menu_id;
 	set_theme_mod( 'nav_menu_locations', $locations );
@@ -569,11 +415,6 @@ function ssw_create_navigation_menu( $template_id, $pages ) {
 	return $menu_id;
 }
 
-/**
- * Set a page as the static front page.
- *
- * @param int $page_id Page ID.
- */
 function ssw_set_front_page( $page_id ) {
 	if ( ! $page_id ) {
 		return;
@@ -583,48 +424,23 @@ function ssw_set_front_page( $page_id ) {
 	update_option( 'page_on_front', intval( $page_id ) );
 }
 
-/**
- * Apply template-specific CSS class.
- *
- * @param string $template_id Template ID.
- */
 function ssw_apply_template_class( $template_id ) {
 	$template_definitions = ssw_get_template_definitions();
-	$body_class = isset( $template_definitions[ $template_id ]['body_class'] )
-		? 'ssw-template ' . $template_definitions[ $template_id ]['body_class']
-		: 'ssw-template';
-
+	$body_class = isset( $template_definitions[ $template_id ]['body_class'] ) ? 'ssw-template ' . $template_definitions[ $template_id ]['body_class'] : 'ssw-template';
 	update_option( 'ssw_template_body_class', $body_class );
 }
 
-/**
- * Setup template pages and content.
- *
- * @param string $template_id Template ID.
- * @param array  $pages Array of page definitions.
- * @return array Array of created page data.
- */
 function ssw_setup_template_pages( $template_id, $pages ) {
 	$page_ids = array();
 
 	foreach ( $pages as $page_definition ) {
-		$page_id = ssw_create_page(
-			$page_definition['title'],
-			$page_definition['content'],
-			$page_definition['slug']
-		);
-
+		$page_id = ssw_create_page( $page_definition['title'], $page_definition['content'], $page_definition['slug'] );
 		if ( is_wp_error( $page_id ) || ! $page_id ) {
 			continue;
 		}
-
-		$page_ids[] = array(
-			'id'    => $page_id,
-			'title' => $page_definition['title'],
-		);
+		$page_ids[] = array( 'id' => $page_id, 'title' => $page_definition['title'] );
 	}
 
-	// Find and set Home as front page.
 	$home_id = 0;
 	foreach ( $page_ids as $page ) {
 		if ( 'home' === strtolower( $page['title'] ) ) {
@@ -643,17 +459,17 @@ function ssw_setup_template_pages( $template_id, $pages ) {
 	return $page_ids;
 }
 
-// Template setup functions.
+function ssw_get_template_setup_function( $template_id ) {
+	$snake_case = str_replace( '-', '_', sanitize_key( $template_id ) );
+	return 'ssw_setup_' . $snake_case . '_template';
+}
 
-/**
- * Setup Local Business template.
- */
 function ssw_setup_local_business_template() {
 	$pages = array(
 		array(
 			'title'   => 'Home',
 			'slug'    => 'home',
-			'content' => '<h1>Helping Local Businesses Grow</h1><p>Professional website support for local service businesses, trades and growing companies.</p><p><a class="button" href="#services">Our Services</a> &nbsp; <a class="button" href="/contact/">Contact Us</a></p>',
+			'content' => '<div class="ssw-template ssw-local-business"><div class="ssw-site-shell"><section class="ssw-hero"><div><h1>Helping Local Businesses Grow</h1><p>Professional website support for local service businesses, trades and growing companies.</p><div class="ssw-button-row"><a class="ssw-button" href="#services">Our Services</a><a class="ssw-button-secondary" href="/contact/">Contact Us</a></div></div><div class="ssw-image-panel">Business Placeholder</div></section></div></div>',
 		),
 		array(
 			'title'   => 'About',
@@ -663,7 +479,7 @@ function ssw_setup_local_business_template() {
 		array(
 			'title'   => 'Services',
 			'slug'    => 'services',
-			'content' => '<h2>Services</h2><ul><li>Service Name</li><li>Service Name</li><li>Service Name</li></ul>',
+			'content' => '<h2>Services</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>Service Name</h3><p>Describe your service in a short, editable paragraph.</p></div><div class="ssw-card"><h3>Service Name</h3><p>Describe your service in a short, editable paragraph.</p></div><div class="ssw-card"><h3>Service Name</h3><p>Describe your service in a short, editable paragraph.</p></div></div>',
 		),
 		array(
 			'title'   => 'Contact',
@@ -671,19 +487,15 @@ function ssw_setup_local_business_template() {
 			'content' => '<h2>Contact</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p>',
 		),
 	);
-
 	return ssw_setup_template_pages( 'local-business', $pages );
 }
 
-/**
- * Setup Corporate template.
- */
 function ssw_setup_corporate_template() {
 	$pages = array(
 		array(
 			'title'   => 'Home',
 			'slug'    => 'home',
-			'content' => '<h1>Helping Businesses Move Forward</h1><p>Build a stronger business with practical solutions designed around your goals.</p><p><a class="button" href="/services/">Explore Our Services</a> &nbsp; <a class="button" href="/contact/">Contact Us</a></p>',
+			'content' => '<div class="ssw-template ssw-corporate"><div class="ssw-site-shell"><section class="ssw-hero"><div><h1>Helping Businesses Move Forward</h1><p>Build a stronger business with practical solutions designed around your goals.</p><div class="ssw-button-row"><a class="ssw-button" href="/services/">Explore Our Services</a><a class="ssw-button-secondary" href="/contact/">Contact Us</a></div></div><div class="ssw-image-panel">Corporate Placeholder</div></section><section class="ssw-section"><div class="ssw-card-grid"><div class="ssw-card"><h3>Professional Service</h3></div><div class="ssw-card"><h3>Practical Solutions</h3></div><div class="ssw-card"><h3>Reliable Support</h3></div></div></section><section class="ssw-section"><div class="ssw-section-header"><h2>A Business Partner You Can Rely On</h2><p>We help clients solve problems, improve operations and achieve business goals.</p></div></section></div></div>',
 		),
 		array(
 			'title'   => 'About',
@@ -693,12 +505,12 @@ function ssw_setup_corporate_template() {
 		array(
 			'title'   => 'Services',
 			'slug'    => 'services',
-			'content' => '<h2>Our Services</h2><ul><li>Business Consulting</li><li>Operations Support</li><li>Strategy &amp; Planning</li><li>Professional Services</li></ul>',
+			'content' => '<h2>Our Services</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>Business Consulting</h3><p>Practical support for strategic direction and business improvement.</p></div><div class="ssw-card"><h3>Operations Support</h3><p>Streamlined delivery for teams and day-to-day performance.</p></div><div class="ssw-card"><h3>Strategy & Planning</h3><p>Clear planning around priorities, budgets and milestones.</p></div><div class="ssw-card"><h3>Professional Services</h3><p>Flexible, value-driven support for operational goals.</p></div></div>',
 		),
 		array(
 			'title'   => 'Projects',
 			'slug'    => 'projects',
-			'content' => '<h2>Case Studies &amp; Projects</h2><p>Sample project — replace this placeholder with a real case study or portfolio item.</p>',
+			'content' => '<h2>Projects</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>Sample Project</h3><p>Sample project — replace this placeholder with a real case study or portfolio item.</p></div><div class="ssw-card"><h3>Sample Project</h3><p>Sample project — replace this placeholder with a real case study or portfolio item.</p></div><div class="ssw-card"><h3>Sample Project</h3><p>Sample project — replace this placeholder with a real case study or portfolio item.</p></div></div>',
 		),
 		array(
 			'title'   => 'Contact',
@@ -706,24 +518,20 @@ function ssw_setup_corporate_template() {
 			'content' => '<h2>Contact Us</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p>',
 		),
 	);
-
 	return ssw_setup_template_pages( 'corporate', $pages );
 }
 
-/**
- * Setup Hotel template.
- */
 function ssw_setup_hotel_template() {
 	$pages = array(
 		array(
 			'title'   => 'Home',
 			'slug'    => 'home',
-			'content' => '<h1>A Comfortable Stay, Made Simple</h1><p>Relax, recharge and enjoy a welcoming stay designed around comfort and convenience.</p><p><a class="button" href="/rooms/">View Rooms</a> &nbsp; <a class="button" href="/contact/">Contact Us</a></p>',
+			'content' => '<div class="ssw-template ssw-hotel"><div class="ssw-site-shell"><section class="ssw-hero"><div><h1>A Comfortable Stay, Made Simple</h1><p>Relax, recharge and enjoy a welcoming stay designed around comfort and convenience.</p><div class="ssw-button-row"><a class="ssw-button" href="/rooms/">View Rooms</a><a class="ssw-button-secondary" href="/contact/">Contact Us</a></div></div><div class="ssw-image-panel">Hospitality Placeholder</div></section><section class="ssw-section"><div class="ssw-section-header"><h2>Welcome to Your Stay</h2><p>Your guest experience begins with thoughtful service, clean comfort and effortless convenience.</p></div></section><section class="ssw-section"><div class="ssw-card-grid"><div class="ssw-card"><h3>Standard Room</h3><p>Simple, calm and beautifully equipped.</p><p>From $XX</p></div><div class="ssw-card"><h3>Deluxe Room</h3><p>Comfortable, bright and restful.</p><p>From $XX</p></div><div class="ssw-card"><h3>Executive Suite</h3><p>More space, extra comfort and a premium stay.</p><p>From $XX</p></div></div></section></div></div>',
 		),
 		array(
 			'title'   => 'Rooms',
 			'slug'    => 'rooms',
-			'content' => '<h2>Our Rooms</h2><ul><li><strong>Standard Room</strong> — from $XX per night</li><li><strong>Deluxe Room</strong> — from $XX per night</li><li><strong>Executive Suite</strong> — from $XX per night</li></ul><p><em>Prices are sample placeholders. Replace with your actual rates.</em></p>',
+			'content' => '<h2>Our Rooms</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>Standard Room</h3><p>Comfortable stay with a simple, relaxed feel.</p><p>From $XX</p></div><div class="ssw-card"><h3>Deluxe Room</h3><p>Spacious guest rooms designed for longer stays.</p><p>From $XX</p></div><div class="ssw-card"><h3>Executive Suite</h3><p>Extra room, thoughtful details and elevated comfort.</p><p>From $XX</p></div></div>',
 		),
 		array(
 			'title'   => 'About',
@@ -733,32 +541,28 @@ function ssw_setup_hotel_template() {
 		array(
 			'title'   => 'Gallery',
 			'slug'    => 'gallery',
-			'content' => '<h2>Gallery</h2><p>Replace this image gallery with your own hospitality and venue photography.</p>',
+			'content' => '<h2>Gallery</h2><div class="ssw-gallery-grid"><div class="ssw-gallery-item">Room</div><div class="ssw-gallery-item">Lobby</div><div class="ssw-gallery-item">Pool</div><div class="ssw-gallery-item">Breakfast</div><div class="ssw-gallery-item">Exterior</div><div class="ssw-gallery-item">Suite</div></div>',
 		),
 		array(
 			'title'   => 'Contact',
 			'slug'    => 'contact',
-			'content' => '<h2>Find Us</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p><p><em>Optional: Embed a map placeholder here.</em></p>',
+			'content' => '<h2>Find Us</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p><p><em>Optional map placeholder.</em></p>',
 		),
 	);
-
 	return ssw_setup_template_pages( 'hotel', $pages );
 }
 
-/**
- * Setup Fashion template.
- */
 function ssw_setup_fashion_template() {
 	$pages = array(
 		array(
 			'title'   => 'Home',
 			'slug'    => 'home',
-			'content' => '<h1>Style Made for Your Everyday</h1><p>Discover thoughtfully selected pieces designed to help you express your style.</p><p><a class="button" href="/shop/">Explore Collection</a> &nbsp; <a class="button" href="/about/">Our Story</a></p>',
+			'content' => '<div class="ssw-template ssw-fashion"><div class="ssw-site-shell"><section class="ssw-hero"><div><h1>Style Made for Your Everyday</h1><p>Discover thoughtfully selected pieces designed to help you express your style.</p><div class="ssw-button-row"><a class="ssw-button" href="/shop/">Explore Collection</a><a class="ssw-button-secondary" href="/about/">Our Story</a></div></div><div class="ssw-image-panel">Fashion Placeholder</div></section><section class="ssw-section"><div class="ssw-card-grid"><div class="ssw-card"><h3>Women</h3></div><div class="ssw-card"><h3>Men</h3></div><div class="ssw-card"><h3>Accessories</h3></div></div></section></div></div>',
 		),
 		array(
 			'title'   => 'Shop',
 			'slug'    => 'shop',
-			'content' => '<h2>Shop / Collection</h2><p>Featured Categories:</p><ul><li>Women</li><li>Men</li><li>Accessories</li></ul><p><em>Build your product catalogue by adding items and linking them here.</em></p>',
+			'content' => '<h2>Shop / Collection</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>New Arrival</h3><p>Item Name — $XX</p></div><div class="ssw-card"><h3>New Arrival</h3><p>Item Name — $XX</p></div><div class="ssw-card"><h3>New Arrival</h3><p>Item Name — $XX</p></div><div class="ssw-card"><h3>New Arrival</h3><p>Item Name — $XX</p></div></div>',
 		),
 		array(
 			'title'   => 'About',
@@ -768,7 +572,7 @@ function ssw_setup_fashion_template() {
 		array(
 			'title'   => 'Lookbook',
 			'slug'    => 'lookbook',
-			'content' => '<h2>Lookbook</h2><p>Replace this section with your editorial lookbook images and styling ideas.</p>',
+			'content' => '<h2>Lookbook</h2><div class="ssw-gallery-grid"><div class="ssw-gallery-item">Look 1</div><div class="ssw-gallery-item">Look 2</div><div class="ssw-gallery-item">Look 3</div><div class="ssw-gallery-item">Look 4</div><div class="ssw-gallery-item">Look 5</div><div class="ssw-gallery-item">Look 6</div></div>',
 		),
 		array(
 			'title'   => 'Contact',
@@ -776,24 +580,20 @@ function ssw_setup_fashion_template() {
 			'content' => '<h2>Contact</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p>',
 		),
 	);
-
 	return ssw_setup_template_pages( 'fashion', $pages );
 }
 
-/**
- * Setup Real Estate template.
- */
 function ssw_setup_real_estate_template() {
 	$pages = array(
 		array(
 			'title'   => 'Home',
 			'slug'    => 'home',
-			'content' => '<h1>Find a Property That Feels Right</h1><p>Explore homes, commercial spaces and property opportunities suited to your needs.</p><p><a class="button" href="/properties/">View Properties</a> &nbsp; <a class="button" href="/contact/">Speak to an Agent</a></p>',
+			'content' => '<div class="ssw-template ssw-real-estate"><div class="ssw-site-shell"><section class="ssw-hero"><div><h1>Find a Property That Feels Right</h1><p>Explore homes, commercial spaces and property opportunities suited to your needs.</p><div class="ssw-button-row"><a class="ssw-button" href="/properties/">View Properties</a><a class="ssw-button-secondary" href="/contact/">Speak to an Agent</a></div></div><div class="ssw-image-panel">Property Placeholder</div></section><section class="ssw-section"><div class="ssw-card-grid"><div class="ssw-card"><h3>Location</h3><p>Type here for a search field placeholder.</p></div><div class="ssw-card"><h3>Property Type</h3><p>Display-only starter filters.</p></div><div class="ssw-card"><h3>Price Range</h3><p>Use later for filtered listings.</p></div></div></section></div></div>',
 		),
 		array(
 			'title'   => 'Properties',
 			'slug'    => 'properties',
-			'content' => '<h2>Featured Properties</h2><p><strong>Sample Property</strong></p><p>Location: Your City</p><p>Price: $XXX</p><p>Type: Residential</p><p>Bedrooms: 3 | Bathrooms: 2</p><p><em>Replace this demo listing with your actual properties.</em></p>',
+			'content' => '<h2>Featured Properties</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>Demo Property</h3><p>Location: Your City</p><p>Price: $XXX</p><p>Type: Residential</p><p>Bedrooms: 3 | Bathrooms: 2</p></div><div class="ssw-card"><h3>Demo Property</h3><p>Location: Your City</p><p>Price: $XXX</p><p>Type: Residential</p><p>Bedrooms: 4 | Bathrooms: 3</p></div><div class="ssw-card"><h3>Demo Property</h3><p>Location: Your City</p><p>Price: $XXX</p><p>Type: Commercial</p><p>Bedrooms: 2 | Bathrooms: 2</p></div></div>',
 		),
 		array(
 			'title'   => 'About',
@@ -803,7 +603,7 @@ function ssw_setup_real_estate_template() {
 		array(
 			'title'   => 'Services',
 			'slug'    => 'services',
-			'content' => '<h2>Our Services</h2><ul><li>Property Sales</li><li>Property Rentals</li><li>Property Management</li><li>Investment Support</li></ul>',
+			'content' => '<h2>Our Services</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>Property Sales</h3></div><div class="ssw-card"><h3>Property Rentals</h3></div><div class="ssw-card"><h3>Property Management</h3></div><div class="ssw-card"><h3>Investment Support</h3></div></div>',
 		),
 		array(
 			'title'   => 'Contact',
@@ -811,24 +611,20 @@ function ssw_setup_real_estate_template() {
 			'content' => '<h2>Contact Us</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p>',
 		),
 	);
-
 	return ssw_setup_template_pages( 'real-estate', $pages );
 }
 
-/**
- * Setup Beauty template.
- */
 function ssw_setup_beauty_template() {
 	$pages = array(
 		array(
 			'title'   => 'Home',
 			'slug'    => 'home',
-			'content' => '<h1>Feel Good. Look Your Best.</h1><p>Professional beauty services in a relaxing environment designed around you.</p><p><a class="button" href="/services/">View Services</a> &nbsp; <a class="button" href="/contact/">Contact Us</a></p>',
+			'content' => '<div class="ssw-template ssw-beauty"><div class="ssw-site-shell"><section class="ssw-hero"><div><h1>Feel Good. Look Your Best.</h1><p>Professional beauty services in a relaxing environment designed around you.</p><div class="ssw-button-row"><a class="ssw-button" href="/services/">View Services</a><a class="ssw-button-secondary" href="/contact/">Contact Us</a></div></div><div class="ssw-image-panel">Beauty Placeholder</div></section><section class="ssw-section"><div class="ssw-card-grid"><div class="ssw-card"><h3>Hair</h3><p>Style and finishing services.</p></div><div class="ssw-card"><h3>Nails</h3><p>Manicures and polished finishes.</p></div><div class="ssw-card"><h3>Facials</h3><p>Skin and glow-focused treatments.</p></div><div class="ssw-card"><h3>Beauty Treatments</h3><p>Tailored care and finishing touches.</p></div></div></section></div></div>',
 		),
 		array(
 			'title'   => 'Services',
 			'slug'    => 'services',
-			'content' => '<h2>Our Services</h2><ul><li><strong>Hair</strong> — professional cutting, styling and treatments</li><li><strong>Nails</strong> — manicure, pedicure and nail art</li><li><strong>Facials</strong> — skincare and facial treatments</li><li><strong>Beauty Treatments</strong> — waxing, threading and more</li></ul>',
+			'content' => '<h2>Our Services</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>Hair</h3><p>Professional cutting, styling and treatments.</p></div><div class="ssw-card"><h3>Nails</h3><p>Manicures, pedicures and nail art.</p></div><div class="ssw-card"><h3>Facials</h3><p>Skin therapy and glow treatments.</p></div><div class="ssw-card"><h3>Beauty Treatments</h3><p>Waxing, threading and finishing touches.</p></div></div>',
 		),
 		array(
 			'title'   => 'About',
@@ -838,7 +634,7 @@ function ssw_setup_beauty_template() {
 		array(
 			'title'   => 'Gallery',
 			'slug'    => 'gallery',
-			'content' => '<h2>Gallery</h2><p>Replace this gallery with your latest salon or spa imagery and transformation photos.</p>',
+			'content' => '<h2>Gallery</h2><div class="ssw-gallery-grid"><div class="ssw-gallery-item">Salon</div><div class="ssw-gallery-item">Nails</div><div class="ssw-gallery-item">Hair</div><div class="ssw-gallery-item">Spa</div><div class="ssw-gallery-item">Beauty</div><div class="ssw-gallery-item">Treatment</div></div>',
 		),
 		array(
 			'title'   => 'Contact',
@@ -846,24 +642,20 @@ function ssw_setup_beauty_template() {
 			'content' => '<h2>Contact Us</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p>',
 		),
 	);
-
 	return ssw_setup_template_pages( 'beauty', $pages );
 }
 
-/**
- * Setup Restaurant template.
- */
 function ssw_setup_restaurant_template() {
 	$pages = array(
 		array(
 			'title'   => 'Home',
 			'slug'    => 'home',
-			'content' => '<h1>Good Food. Good Moments.</h1><p>Freshly prepared dishes served in a warm and welcoming setting.</p><p><a class="button" href="/menu/">View Menu</a> &nbsp; <a class="button" href="/contact/">Find Us</a></p>',
+			'content' => '<div class="ssw-template ssw-restaurant"><div class="ssw-site-shell"><section class="ssw-hero"><div><h1>Good Food. Good Moments.</h1><p>Freshly prepared dishes served in a warm and welcoming setting.</p><div class="ssw-button-row"><a class="ssw-button" href="/menu/">View Menu</a><a class="ssw-button-secondary" href="/contact/">Find Us</a></div></div><div class="ssw-image-panel">Food Placeholder</div></section><section class="ssw-section"><div class="ssw-card-grid"><div class="ssw-card"><h3>Popular Dish</h3><p>Freshly made and full of flavour.</p></div><div class="ssw-card"><h3>Popular Dish</h3><p>Freshly made and full of flavour.</p></div><div class="ssw-card"><h3>Popular Dish</h3><p>Freshly made and full of flavour.</p></div></div></section></div></div>',
 		),
 		array(
 			'title'   => 'Menu',
 			'slug'    => 'menu',
-			'content' => '<h2>Menu</h2><h3>Starters</h3><p>Item — $XX</p><h3>Mains</h3><p>Item — $XX</p><h3>Drinks</h3><p>Item — $XX</p><h3>Desserts</h3><p>Item — $XX</p><p><em>All prices are editable placeholders. Replace with your actual menu and pricing.</em></p>',
+			'content' => '<h2>Menu</h2><h3>Starters</h3><p>House Salad — $XX</p><p>Soup of the Day — $XX</p><h3>Mains</h3><p>Signature Grill — $XX</p><p>Chef Special — $XX</p><h3>Drinks</h3><p>Fresh Juice — $XX</p><p>House Blend Coffee — $XX</p><h3>Desserts</h3><p>Chef Dessert — $XX</p>',
 		),
 		array(
 			'title'   => 'About',
@@ -873,7 +665,7 @@ function ssw_setup_restaurant_template() {
 		array(
 			'title'   => 'Gallery',
 			'slug'    => 'gallery',
-			'content' => '<h2>Gallery</h2><p>Add your food and venue photography here to showcase your restaurant\'s ambience and cuisine.</p>',
+			'content' => '<h2>Gallery</h2><div class="ssw-gallery-grid"><div class="ssw-gallery-item">Food</div><div class="ssw-gallery-item">Dining</div><div class="ssw-gallery-item">Kitchen</div><div class="ssw-gallery-item">Dessert</div><div class="ssw-gallery-item">Venue</div><div class="ssw-gallery-item">Drinks</div></div>',
 		),
 		array(
 			'title'   => 'Contact',
@@ -881,19 +673,15 @@ function ssw_setup_restaurant_template() {
 			'content' => '<h2>Contact Us</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p><p><strong>Opening Hours:</strong></p><p>Monday – Friday: XX:XX – XX:XX<br>Saturday: XX:XX – XX:XX<br>Sunday: XX:XX – XX:XX</p>',
 		),
 	);
-
 	return ssw_setup_template_pages( 'restaurant', $pages );
 }
 
-/**
- * Setup Clinic template.
- */
 function ssw_setup_clinic_template() {
 	$pages = array(
 		array(
 			'title'   => 'Home',
 			'slug'    => 'home',
-			'content' => '<h1>Professional Care, Close to You</h1><p>Providing accessible healthcare services in a welcoming and professional environment.</p><p><a class="button" href="/services/">View Services</a> &nbsp; <a class="button" href="/contact/">Contact the Clinic</a></p>',
+			'content' => '<div class="ssw-template ssw-clinic"><div class="ssw-site-shell"><section class="ssw-hero"><div><h1>Professional Care, Close to You</h1><p>Providing accessible healthcare services in a welcoming and professional environment.</p><div class="ssw-button-row"><a class="ssw-button" href="/services/">View Services</a><a class="ssw-button-secondary" href="/contact/">Contact the Clinic</a></div></div><div class="ssw-image-panel">Healthcare Placeholder</div></section><section class="ssw-section"><div class="ssw-card-grid"><div class="ssw-card"><h3>General Consultation</h3><p>Friendly, approachable care for everyday concerns.</p></div><div class="ssw-card"><h3>Health Screening</h3><p>Routine and preventive checks.</p></div><div class="ssw-card"><h3>Follow-Up Care</h3><p>Continued, consistent support.</p></div><div class="ssw-card"><h3>Specialist Services</h3><p>Targeted care with clear next steps.</p></div></div></section></div></div>',
 		),
 		array(
 			'title'   => 'Services',
@@ -908,61 +696,48 @@ function ssw_setup_clinic_template() {
 		array(
 			'title'   => 'Team',
 			'slug'    => 'team',
-			'content' => '<h2>Meet the Team</h2><p><strong>Name Placeholder</strong></p><p>Role Placeholder</p><p>Short biography placeholder.</p><p><em>All team information is a placeholder. Replace with your actual staff details.</em></p>',
+			'content' => '<h2>Meet the Team</h2><div class="ssw-card-grid"><div class="ssw-card"><h3>Name Placeholder</h3><p>Role Placeholder</p><p>Short biography placeholder.</p></div><div class="ssw-card"><h3>Name Placeholder</h3><p>Role Placeholder</p><p>Short biography placeholder.</p></div><div class="ssw-card"><h3>Name Placeholder</h3><p>Role Placeholder</p><p>Short biography placeholder.</p></div></div>',
 		),
 		array(
 			'title'   => 'Contact',
 			'slug'    => 'contact',
-			'content' => '<h2>Contact Us</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p><p><strong>Opening Hours:</strong></p><p>Monday – Friday: XX:XX – XX:XX</p><p style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-left: 4px solid #c66a3d;"><strong>Important:</strong> This website does not provide emergency medical assistance. Contact your local emergency service when urgent help is required.</p>',
+			'content' => '<h2>Contact Us</h2><p>Your Address</p><p>Your Phone Number</p><p><a href="mailto:hello@example.com">hello@example.com</a></p><p><strong>Opening Hours:</strong></p><p>Monday – Friday: XX:XX – XX:XX</p><p style="padding: 14px; background: #f0f9ff; border-left: 4px solid #2b7a78;">This website does not provide emergency medical assistance. Contact your local emergency service when urgent help is required.</p>',
 		),
 	);
-
 	return ssw_setup_template_pages( 'clinic', $pages );
 }
 
-/**
- * Handle site creation AJAX request.
- */
 function ssw_handle_site_creation() {
 	try {
-		// Verify nonce.
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'ssw_create_site_nonce' ) ) {
 			throw new Exception( 'Security verification failed. Please try again.' );
 		}
 
-		// Verify multisite.
 		if ( ! is_multisite() ) {
 			throw new Exception( 'This plugin requires a WordPress Multisite network.' );
 		}
 
-		// Verify super admin.
 		if ( ! is_super_admin() ) {
 			throw new Exception( 'Only network super admins can create Snap Sites.' );
 		}
 
-		// Get and validate template ID.
 		$template_id = isset( $_POST['template_id'] ) ? sanitize_key( wp_unslash( $_POST['template_id'] ) ) : '';
 		$templates = ssw_get_template_definitions();
-
 		if ( empty( $template_id ) || ! array_key_exists( $template_id, $templates ) ) {
 			throw new Exception( 'Please choose a valid starter template.' );
 		}
 
-		// Check template access.
 		if ( ! ssw_user_can_access_template( $template_id, ssw_get_current_plan() ) ) {
 			throw new Exception( 'This starter template is not available for the current plan.' );
 		}
 
-		// Check plan limit.
 		$limit = ssw_get_plan_limit_for_current_plan();
-		$used  = ssw_get_active_site_count();
-
+		$used = ssw_get_active_site_count();
 		if ( $used >= $limit ) {
 			throw new Exception( 'You\'ve reached your plan limit. Upgrade to create more sites.' );
 		}
 
-		// Get optional site details.
 		$business_name = isset( $_POST['business_name'] ) ? sanitize_text_field( wp_unslash( $_POST['business_name'] ) ) : '';
 		$business_name = trim( $business_name );
 		if ( empty( $business_name ) ) {
@@ -971,13 +746,11 @@ function ssw_handle_site_creation() {
 
 		$customer_email = isset( $_POST['customer_email'] ) ? sanitize_email( wp_unslash( $_POST['customer_email'] ) ) : '';
 		if ( empty( $customer_email ) ) {
-			$customer_email = 'admin@example.com';
+			$customer_email = 'hello@example.com';
 		}
 
-		// Generate site credentials.
 		$site_slug = ssw_generate_site_slug( $template_id );
-		$network   = get_network();
-
+		$network = get_network();
 		if ( ! $network ) {
 			throw new Exception( 'Unable to retrieve network information.' );
 		}
@@ -985,7 +758,6 @@ function ssw_handle_site_creation() {
 		$username = 'admin-' . substr( md5( $site_slug . microtime() ), 0, 8 );
 		$password = wp_generate_password( 18, true, true );
 
-		// Create or get user.
 		$user_id = username_exists( $username );
 		if ( ! $user_id ) {
 			$user_id = wp_create_user( $username, $password, $customer_email );
@@ -995,15 +767,12 @@ function ssw_handle_site_creation() {
 			throw new Exception( $user_id->get_error_message() );
 		}
 
-		// Create the site.
 		$new_site_id = wpmu_create_blog(
 			$network->domain,
 			'/' . $site_slug . '/',
 			$business_name,
 			$user_id,
-			array(
-				'public' => 1,
-			),
+			array( 'public' => 1 ),
 			$network->id
 		);
 
@@ -1011,25 +780,21 @@ function ssw_handle_site_creation() {
 			throw new Exception( $new_site_id->get_error_message() );
 		}
 
-		// Verify site was created.
 		$new_blog = get_blog_details( array( 'blog_id' => $new_site_id ) );
 		if ( ! $new_blog ) {
 			throw new Exception( 'The new site could not be loaded after creation.' );
 		}
 
-		// Add user to new site.
 		add_user_to_blog( $new_site_id, $user_id, 'administrator' );
 
-		// Switch to new site and configure it.
 		switch_to_blog( $new_site_id );
-
-		// Store metadata.
 		update_blog_option( $new_site_id, 'ssw_template_used', $template_id );
 		update_blog_option( $new_site_id, 'ssw_site_status', 'active' );
 		update_blog_option( $new_site_id, 'ssw_business_name', $business_name );
 		update_blog_option( $new_site_id, 'ssw_created_on', current_time( 'mysql' ) );
+		update_option( 'blogname', $business_name );
+		update_option( 'blogdescription', 'Your tagline here' );
 
-		// Delete default content.
 		$hello_post = get_page_by_title( 'Hello World' );
 		if ( $hello_post ) {
 			wp_delete_post( $hello_post->ID, true );
@@ -1040,47 +805,29 @@ function ssw_handle_site_creation() {
 			wp_delete_post( $sample_page->ID, true );
 		}
 
-		// Set site title and tagline.
-		update_option( 'blogname', $business_name );
-		update_option( 'blogdescription', 'Your tagline here' );
-
-		// Call template setup function.
 		$setup_function = ssw_get_template_setup_function( $template_id );
 		if ( function_exists( $setup_function ) ) {
 			call_user_func( $setup_function );
 		}
 
-		// Restore original site.
 		restore_current_blog();
 
-		// Prepare response.
-		$response_data = array(
-			'site_url'   => get_site_url( $new_site_id ),
-			'admin_url'  => get_admin_url( $new_site_id ),
-			'username'   => $username,
-			'password'   => $password,
-			'template'   => $template_id,
-			'site_title' => $business_name,
-		);
-
-		wp_send_json_success( $response_data );
-
-	} catch ( Throwable $e ) {
-		wp_send_json_error(
+		wp_send_json_success(
 			array(
-				'message' => $e->getMessage(),
+				'site_url'   => get_site_url( $new_site_id ),
+				'admin_url'  => get_admin_url( $new_site_id ),
+				'username'   => $username,
+				'password'   => $password,
+				'template'   => $template_id,
+				'site_title' => $business_name,
 			)
 		);
+	} catch ( Throwable $e ) {
+		wp_send_json_error( array( 'message' => $e->getMessage() ) );
 	}
 }
 add_action( 'wp_ajax_ssw_create_site', 'ssw_handle_site_creation' );
 
-/**
- * Add template body class filter.
- *
- * @param array $classes Body classes.
- * @return array
- */
 function ssw_body_class_filter( $classes ) {
 	$template_class = get_option( 'ssw_template_body_class' );
 	if ( ! empty( $template_class ) ) {
@@ -1091,14 +838,10 @@ function ssw_body_class_filter( $classes ) {
 			}
 		}
 	}
-
 	return $classes;
 }
 add_filter( 'body_class', 'ssw_body_class_filter' );
 
-/**
- * Enqueue frontend stylesheet.
- */
 function ssw_enqueue_frontend_assets() {
 	wp_enqueue_style(
 		'ssw-frontend-style',
@@ -1109,14 +852,9 @@ function ssw_enqueue_frontend_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'ssw_enqueue_frontend_assets' );
 
-/**
- * Plugin activation hook.
- */
 function ssw_plugin_activation() {
 	if ( ! is_multisite() ) {
 		wp_die( 'Snap Sites WP requires WordPress Multisite to be enabled.' );
 	}
-
-	// Activation logic can go here.
 }
 register_activation_hook( SSW_PLUGIN_FILE, 'ssw_plugin_activation' );
